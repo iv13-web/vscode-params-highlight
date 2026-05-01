@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Verify package.json version matches tag
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "::error::package.json version ($PKG) does not match tag ($TAG)"
+            exit 1
+          fi
+
+      - run: npm run check-types
+
+      - run: npm run build
+
+      - name: Package vsix
+        run: npx @vscode/vsce package -o extension.vsix
+
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish --packagePath extension.vsix -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX Registry
+        run: npx ovsx publish extension.vsix -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      - name: Attach vsix to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: extension.vsix
+          generate_release_notes: true

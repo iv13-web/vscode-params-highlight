@@ -1,0 +1,99 @@
+{
+  "name": "params-highlight",
+  "displayName": "Params Highlight",
+  "description": "WebStorm-style highlighting of function parameters in TypeScript and JavaScript",
+  "version": "0.1.0",
+  "publisher": "iv13-web",
+  "license": "MIT",
+  "author": {
+    "name": "Igor Ivanov",
+    "url": "https://github.com/iv13-web"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "typescript",
+    "javascript",
+    "syntax",
+    "highlight",
+    "parameter",
+    "parameters",
+    "decoration"
+  ],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iv13-web/vscode-params-highlight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iv13-web/vscode-params-highlight/issues"
+  },
+  "homepage": "https://github.com/iv13-web/vscode-params-highlight#readme",
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact"
+  ],
+  "main": "./out/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true,
+      "description": "Reads source code only to compute parameter highlight ranges. Never executes user code, opens files, or accesses the network."
+    },
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "paramsHighlight.configure",
+        "title": "Params Highlight: Configure Style"
+      }
+    ],
+    "configuration": {
+      "title": "Params Highlight",
+      "properties": {
+        "paramsHighlight.color": {
+          "type": "string",
+          "default": "#CC7832",
+          "description": "Color used to highlight function parameters (any CSS color string)."
+        },
+        "paramsHighlight.italic": {
+          "type": "boolean",
+          "default": true,
+          "description": "Render parameters in italic."
+        },
+        "paramsHighlight.bold": {
+          "type": "boolean",
+          "default": false,
+          "description": "Render parameters in bold."
+        },
+        "paramsHighlight.maxFileSize": {
+          "type": "number",
+          "default": 524288,
+          "description": "Maximum file size in bytes for which highlighting will run. Files larger than this are skipped and a notification is shown once per file."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "build": "node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "vscode:prepublish": "npm run check-types && npm run build",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.2.14",
+    "@types/vscode": "^1.75.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.9.3"
+  }
+}
